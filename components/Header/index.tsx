@@ -31,7 +31,7 @@ export const Header = () => {
           </button>
           <button className="inline-block relative px-2 h-24 ml-8 hover:text-white transition-colors">
             <ActiveLink href="/posts" activeClassName="text-black">
-              <p>Conteudos</p>
+              <p>content</p>
             </ActiveLink>
           </button>
           <button className="inline-block relative px-2 h-24 ml-8 hover:text-white transition-colors">

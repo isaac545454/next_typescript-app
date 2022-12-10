@@ -9,12 +9,15 @@ import {
   FiChevronsRight,
 } from "react-icons/fi";
 import { GetStaticProps } from "next";
+import { useState } from "react";
 import { getPrismicClient } from "../../services/prismic";
 import Prismic from "@prismicio/client";
 import { RichText } from "prismic-dom";
 
 interface Props {
   posts: TypePosts[];
+  page: string;
+  totalpages: string;
 }
 
 type TypePosts = {
@@ -25,8 +28,50 @@ type TypePosts = {
   updatedAt: string;
 };
 
-const Posts = ({ posts }: Props) => {
-  console.log(posts);
+const Posts = ({ posts: postBlog, totalPages, page }: Props) => {
+  const [posts, setPosts] = useState(postBlog || []);
+  const [currentPage, setCurrentPage] = useState(Number(page));
+
+  const navigatePage = async (page: number) => {
+    const response = await reqPost(page);
+    if (response.results.length === 0) return;
+
+    const getPosts = response.results.map((post) => {
+      console.log(post);
+
+      return {
+        slug: post.uid,
+        title: RichText.asText(post.data.title),
+        // description: RichText.asText(post.data.description),
+        cover: post.data.cover.url,
+        updatedAt: new Date(post.last_publication_date).toLocaleDateString(
+          "pt-BR",
+          {
+            day: "2-digit",
+            month: "long",
+            year: "numeric",
+          }
+        ),
+      };
+    });
+    setCurrentPage(page);
+    setPosts(getPosts);
+  };
+
+  //buscar novos posts
+  const reqPost = async (req: number) => {
+    const prismic = getPrismicClient();
+    const response = await prismic.query(
+      [Prismic.Predicates.at("document.type", "post")],
+      {
+        orderings: "[document.last_publication_date desc]",
+        fetch: ["post.title", "post.description", "post.cover"],
+        pageSize: 1,
+        page: String(req),
+      }
+    );
+    return response;
+  };
 
   return (
     <>
@@ -34,45 +79,75 @@ const Posts = ({ posts }: Props) => {
         <title>Blog Sujeito programador </title>
       </Head>
       <main className="max-w-[1120px] mx-auto px-8">
-        <div className="max-w-[720px] my-20 mx-auto">
-          <Link href="/" className="block mt-8 pt-8">
-            <Image
-              src="/images/thumb.png"
-              width={720}
-              height={410}
-              alt="texto 1"
-              quality={100}
-            />
-            <strong className="block text-xl my-8 text-white hover:text-blue-primary transition-colors">
-              Criando meu primeiro aplicativo
-            </strong>
-            <time className="text-gray-300 flex text-base items-center ">
-              14 JULHO 2021
-            </time>
-            <p className="text-white mt-2">
-              Hoje vamos criar o controle de mostrar a senha no input, uma opção
-              para os nossos formulários de cadastro e login. Mas chega de
-              conversa e bora pro código junto comigo que o vídeo está show de
-              bola!
-            </p>
-          </Link>
+        <div className="max-w-[500px] my-20 mx-auto">
+          {posts.map((post) => (
+            <Link
+              href={`/posts/${post.slug}`}
+              className="block mt-8 pt-8"
+              key={post.id}
+            >
+              <Image
+                src={post.cover}
+                width={220}
+                height={220}
+                alt={post.title}
+                quality={100}
+                className="mx-auto"
+                placeholder="blur"
+                blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mPUqwcAAOEArzGi5DEAAAAASUVORK5CYII="
+              />
+              <strong className="block text-xl my-8 text-white hover:text-blue-primary transition-colors">
+                {post.title}
+              </strong>
+              <time className="text-gray-300 flex text-base items-center ">
+                {post.updatedAt}
+              </time>
+              <p className="text-white mt-2">
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Iure
+                fugit quisquam cumque magni dolores quod maxime similique a
+                autem! Similique corrupti molestias sunt, ullam reprehenderit
+                aut harum recusandae sequi magni.
+              </p>
+            </Link>
+          ))}
 
           <div className="mt-8 flex  items-center flex-row justify-between max-w-[1120px]">
             <div className="flex">
-              <button className="mx-2 bg-blue-primary p-2 flex rounded">
-                <FiChevronsLeft size={25} color="#fff" />
-              </button>
-              <button className="mx-2 bg-blue-primary p-2 flex rounded">
-                <FiChevronLeft size={25} color="#fff" />
-              </button>
+              {Number(currentPage) >= 2 && (
+                <>
+                  <button
+                    className="mx-2 bg-blue-primary p-2 flex rounded"
+                    onClick={() => navigatePage(1)}
+                  >
+                    <FiChevronsLeft size={25} color="#fff" />
+                  </button>
+                  <button
+                    className="mx-2 bg-blue-primary p-2 flex rounded"
+                    onClick={() => navigatePage(Number(currentPage - 1))}
+                  >
+                    <FiChevronLeft size={25} color="#fff" />
+                  </button>
+                </>
+              )}
             </div>
+
             <div className="flex">
-              <button className="mx-2 bg-blue-primary p-2 flex rounded">
-                <FiChevronRight size={25} color="#fff" />
-              </button>
-              <button className="mx-2 bg-blue-primary p-2 flex rounded">
-                <FiChevronsRight size={25} color="#fff" />
-              </button>
+              {Number(currentPage) < Number(totalPages) && (
+                <>
+                  <button
+                    className="mx-2 bg-blue-primary p-2 flex rounded"
+                    onClick={() => navigatePage(Number(currentPage + 1))}
+                  >
+                    <FiChevronRight size={25} color="#fff" />
+                  </button>
+                  <button
+                    className="mx-2 bg-blue-primary p-2 flex rounded"
+                    onClick={() => navigatePage(Number(totalPages))}
+                  >
+                    <FiChevronsRight size={25} color="#fff" />
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -90,7 +165,7 @@ export const getStaticProps: GetStaticProps = async () => {
     {
       orderings: "[document.last_publication_date desc]",
       fetch: ["post.title", "post.description", "post.cover"],
-      pageSize: 2,
+      pageSize: 1,
     }
   );
 
@@ -100,7 +175,7 @@ export const getStaticProps: GetStaticProps = async () => {
     return {
       slug: post.uid,
       title: RichText.asText(post.data.title),
-      // description: RichText.asText(post.data.description),
+      //description: RichText.asText(post.data.textarea),
       cover: post.data.cover.url,
       updatedAt: new Date(post.last_publication_date).toLocaleDateString(
         "pt-BR",
@@ -116,6 +191,8 @@ export const getStaticProps: GetStaticProps = async () => {
   return {
     props: {
       posts,
+      page: response.page,
+      totalPages: response.total_pages,
     },
     revalidate: 60 * 30,
   };
