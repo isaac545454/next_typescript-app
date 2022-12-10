@@ -1,0 +1,69 @@
+{
+  "id": "mock-doc-id",
+  "url": null,
+  "type": "home",
+  "href": null,
+  "tags": [],
+  "first_publication_date": "1970-01-01T00:00:01+0000",
+  "last_publication_date": "1970-01-01T00:00:01+0000",
+  "slugs": [],
+  "linked_documents": [],
+  "lang": "en-us",
+  "alternate_languages": [],
+  "data": {
+    "title": [
+      {
+        "type": "paragraph",
+        "text": "Est eiusmod qui fugiat magna dolore velit occaecat ex et mollit. Irure sit sit commodo duis ad elit est do cupidatat.",
+        "spans": []
+      }
+    ],
+    "subtitle": [
+      {
+        "type": "paragraph",
+        "text": "Non et anim ad cupidatat ea deserunt.",
+        "spans": []
+      }
+    ],
+    "mobile": [
+      {
+        "type": "paragraph",
+        "text": "Consequat laborum cupidatat do velit. Non veniam velit consequat sunt enim deserunt minim. Laborum elit exercitation excepteur cupidatat proident minim.",
+        "spans": []
+      }
+    ],
+    "mobilecontent": [
+      {
+        "type": "paragraph",
+        "text": "Ut ut est deserunt elit elit duis incididunt laboris nisi velit qui. Et cupidatat incididunt non et reprehenderit voluptate consequat elit.",
+        "spans": []
+      }
+    ],
+    "mobilebanner": [
+      {}
+    ],
+    "webtitle": [
+      {
+        "type": "paragraph",
+        "text": "Ad incididunt labore ad ad. Exercitation anim sint excepteur. Cillum id adipisicing nulla voluptate voluptate.",
+        "spans": []
+      }
+    ],
+    "websubtitle": [
+      {
+        "type": "paragraph",
+        "text": "Occaecat velit id mollit.",
+        "spans": []
+      }
+    ],
+    "webbanner": {
+      "dimensions": {
+        "width": 900,
+        "height": 500
+      },
+      "alt": null,
+      "copyright": null,
+      "url": "https://images.unsplash.com/photo-1607582278043-57198ac8da43"
+    }
+  }
+}

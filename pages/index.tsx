@@ -1,8 +1,28 @@
 import Head from "next/head";
 import Image from "next/image";
 import techsImage from "../public/images/techs.svg";
+import { GetStaticProps } from "next";
+import { getPrismicClient } from "../services/prismic";
+import Prismic from "@prismicio/client";
+import { RichText } from "prismic-dom";
 
-export default function Home() {
+type Content = {
+  title: string;
+  subTitle: string;
+  mobile: string;
+  mobileSubTitle: string;
+  webtitle: string;
+  webSubTitle: string;
+  webBanner: string;
+};
+
+interface Props {
+  content: Content;
+}
+
+export default function Home({ content }: Props) {
+  console.log(content);
+
   return (
     <>
       <Head>
@@ -15,14 +35,12 @@ export default function Home() {
         >
           <section className="max-w-[600px] max-[600px]:w-[90vw] max-[600px]:flex max-[600px]:flex-col">
             <h1 className="text-5xl font-bold mt-10 mb-6 text-white leading-10">
-              Levando você ao próximo nível!
+              {content.title}
             </h1>
             <span className="text-base  text-gray-300  ">
-              Uma plataforma com cursos que vão do zero até o profissional na
-              pratica, direto ao ponto aplicando o que usamos no mercado de
-              trabalho. 👊
+              {content.subTitle}
             </span>
-            <a href="#">
+            <a href="https://www.linkedin.com/in/isaac-gomes-crmservices/">
               <button className="bg-blue-primary  py-4 px-7 mt-10 rounded-xl text-white font-bold">
                 COMEÇAR AGORA!
               </button>
@@ -42,16 +60,14 @@ export default function Home() {
         >
           <section className="max-w-[600px] mr-4">
             <h2 className="text-white mb-6 text-4xl font-bold leading-10">
-              Aprenda criar aplicativos para Android e iOS
+              {content.mobile}
             </h2>
             <span className="text-gray-300 text-base ">
-              Você vai descobrir o jeito mais moderno de desenvolver apps
-              nativos para iOS e Android, construindo aplicativos do zero até
-              aplicativos.
+              {content.mobileSubTitle}
             </span>
           </section>
           <img
-            src="/images/financasApp.png"
+            src={content.webBanner}
             alt="desenvolvimento de apps com react native"
             className="max-w-[600px] max-[600px]:w-[50vw] max-[600px]:mt-10"
           />
@@ -68,11 +84,11 @@ export default function Home() {
           />
           <section className="max-w-[600px] ml-4 max-[600px]:max-w-[80vw]">
             <h2 className="text-white mb-6 text-4xl font-bold leading-10">
-              Aprenda criar sistemas web
+              {content.webtitle}
             </h2>
             <span className="text-gray-300 text-base ">
-              Criar sistemas web, sites usando as tecnologias mais modernas e
-              requisitadas pelo mercado.
+              {" "}
+              {content.webSubTitle}
             </span>
           </section>
         </div>
@@ -101,3 +117,41 @@ export default function Home() {
     </>
   );
 }
+
+export const getStaticProps: GetStaticProps = async () => {
+  const prismic = getPrismicClient();
+
+  const response = await prismic.query([
+    Prismic.Predicates.at("document.type", "home"),
+  ]);
+
+  const {
+    title,
+    subtitle,
+    mobile,
+    mobilecontent,
+    mobilebanner,
+    webtitle,
+    websubtitle,
+    webbanner,
+  } = response.results[0].data;
+
+  const content: any = {
+    title: RichText.asText(title),
+    subTitle: RichText.asText(subtitle),
+    mobile: RichText.asText(mobile),
+    mobileSubTitle: RichText.asText(mobilecontent),
+    webtitle: RichText.asText(webtitle),
+    webSubTitle: RichText.asText(websubtitle),
+    webBanner: webbanner.url,
+  };
+
+  console.log(content);
+
+  return {
+    props: {
+      content,
+    },
+    revalidate: 60 * 2,
+  };
+};
