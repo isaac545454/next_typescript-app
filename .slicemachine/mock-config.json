@@ -1,0 +1,13 @@
+{
+  "_cts": {
+    "home": {},
+    "post": {
+      "textarea": {
+        "config": {
+          "patternType": "PARAGRAPH",
+          "blocks": 1
+        }
+      }
+    }
+  }
+}
